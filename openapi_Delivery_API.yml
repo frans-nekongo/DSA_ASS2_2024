@@ -1,0 +1,177 @@
+openapi: 3.0.0
+info:
+  title: Logistics Delivery API
+  description: API for managing package delivery requests and availability checks.
+  version: 1.0.0
+servers:
+  - url: http://localhost:9090
+    description: Local development server
+
+paths:
+  /availabilityCheck:
+    get:
+      summary: Retrieve the available slots for a specific town and date.
+      operationId: checkAvailability
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+            example: "2024-10-01"
+        - name: town
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "Windhoek"
+        - name: slot
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "1"
+      responses:
+        '200':
+          description: Availability information for the specified town, date, and slot.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  available:
+                    type: boolean
+                    description: Indicates if the specified slot is available.
+                    example: true
+                  townName:
+                    type: string
+                    description: The name of the town.
+                    example: "Windhoek"
+                  date:
+                    type: string
+                    format: date
+                    description: The date for which availability is checked.
+                    example: "2024-10-01"
+                  slot:
+                    type: string
+                    description: The time slot being checked for availability.
+                    example: "1"
+
+  /request:
+    post:
+      summary: Submit a delivery request.
+      operationId: createRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeliveryRequest'
+      responses:
+        '201':
+          description: Delivery request successfully created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  packageId:
+                    type: string
+                    description: The generated package ID for the request.
+                    example: PackageID-001
+
+  /packageStatus:
+    get:
+      summary: Retrieve package status by package ID.
+      operationId: getPackageStatus
+      parameters:
+        - name: packageId
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "PackageID-001"
+      responses:
+        '200':
+          description: Package information retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requestId:
+                    type: string
+                    description: Unique ID for the delivery request
+                    example: "1"
+                  customerName:
+                    type: string
+                    description: Name of the customer
+                    example: "John Doe"
+                  customerContact:
+                    type: string
+                    description: Contact information of the customer
+                    example: "johndoe@example.com"
+                  fromTown:
+                    type: string
+                    description: Town where the package will be picked up
+                    example: "Windhoek"
+                  toTown:
+                    type: string
+                    description: Town where the package will be delivered
+                    example: "Swakopmund"
+                  pickupDate:
+                    type: string
+                    format: date
+                    description: Date for the package pickup
+                    example: "2024-10-01"
+                  pickupSlot:
+                    type: string
+                    description: The time slot for the pickup
+                    example: "1"
+                  deliveryType:
+                    type: string
+                    enum: [Normal, Express, International]
+                    description: Type of delivery requested
+                    example: "Express"
+                  deliveryDate:
+                    type: string
+                    format: date
+                    description: Estimated date for the delivery
+                    example: "2024-10-03"
+
+components:
+  schemas:
+    DeliveryRequest:
+      type: object
+      properties:
+        customerName:
+          type: string
+          description: Name of the customer
+          example: "John Doe"
+        customerContact:
+          type: string
+          description: Contact information of the customer
+          example: "johndoe@example.com"
+        fromTown:
+          type: string
+          description: Town where the package will be picked up
+          example: "Windhoek"
+        toTown:
+          type: string
+          description: Town where the package will be delivered
+          example: "Swakopmund"
+        pickupDate:
+          type: string
+          format: date
+          description: Date for the package pickup
+          example: "2024-10-01"
+        pickupSlot:
+          type: string
+          description: The time slot for the pickup
+          example: "1"
+        deliveryType:
+          type: string
+          enum: [Normal, Express, International]
+          description: Type of delivery requested
+          example: "Express"
