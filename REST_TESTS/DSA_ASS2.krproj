@@ -1,0 +1,16 @@
+{
+  "id": "294918e7-bf20-4332-82cd-1bfbe4546644",
+  "importStreams": [
+    {
+      "id": "64ceb6a2-fbd8-47f2-ada0-e85bda6fb2b9",
+      "name": "open-api-file-importer",
+      "importerName": "OpenApiFileImporter",
+      "createMissingOperations": true,
+      "options": {
+        "path": "../openapi_Delivery_API.yml"
+      }
+    }
+  ],
+  "authConfigs": [],
+  "certificates": []
+}

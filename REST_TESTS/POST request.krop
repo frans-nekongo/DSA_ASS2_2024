@@ -1,0 +1,24 @@
+{
+  "details": {
+    "path": "/request",
+    "method": "POST",
+    "importedOperationId": "POST /request",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "pathParams": []
+  },
+  "requests": [
+    {
+      "location": "POST request-request.json",
+      "contentType": "json"
+    }
+  ],
+  "operationType": "unary",
+  "invokerName": "rest",
+  "typeHint": "POST",
+  "importStreamId": "64ceb6a2-fbd8-47f2-ada0-e85bda6fb2b9"
+}

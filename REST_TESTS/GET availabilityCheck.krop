@@ -1,0 +1,30 @@
+{
+  "details": {
+    "path": "/availabilityCheck",
+    "method": "GET",
+    "importedOperationId": "GET /availabilityCheck",
+    "queryParams": [
+      {
+        "key": "date",
+        "value": ""
+      },
+      {
+        "key": "town",
+        "value": "Windhoek"
+      },
+      {
+        "key": "slot",
+        "value": "1"
+      }
+    ]
+  },
+  "requests": [
+    {
+      "contentType": "none"
+    }
+  ],
+  "operationType": "unary",
+  "invokerName": "rest",
+  "typeHint": "GET",
+  "importStreamId": "64ceb6a2-fbd8-47f2-ada0-e85bda6fb2b9"
+}

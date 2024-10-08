@@ -1,0 +1,22 @@
+{
+  "details": {
+    "path": "/packageStatus",
+    "method": "GET",
+    "importedOperationId": "GET /packageStatus",
+    "queryParams": [
+      {
+        "key": "packageId",
+        "value": "PackageID-001"
+      }
+    ]
+  },
+  "requests": [
+    {
+      "contentType": "none"
+    }
+  ],
+  "operationType": "unary",
+  "invokerName": "rest",
+  "typeHint": "GET",
+  "importStreamId": "64ceb6a2-fbd8-47f2-ada0-e85bda6fb2b9"
+}

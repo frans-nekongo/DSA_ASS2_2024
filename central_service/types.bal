@@ -3,19 +3,19 @@
 
 public type DeliveryRequest record {
     # Name of the customer
-    string customerName?;
+    string customerName;
     # Contact information of the customer
-    string customerContact?;
+    string customerContact;
     # Town where the package will be picked up
-    string fromTown?;
+    string fromTown;
     # Town where the package will be delivered
-    string toTown?;
+    string toTown;
     # Date for the package pickup
-    string pickupDate?;
+    string pickupDate;
     # The time slot for the pickup
-    string pickupSlot?;
+    string pickupSlot;
     # Type of delivery requested
-    "Normal"|"Express"|"International" deliveryType?;
+    "Normal"|"Express"|"International" deliveryType;
 };
 
 public type inline_response_201 record {
