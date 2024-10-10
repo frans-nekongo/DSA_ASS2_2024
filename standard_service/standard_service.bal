@@ -105,7 +105,19 @@ function createPackageID() returns string {
 }
 
 type TownDeliveryTable record {
-
+    int id;
+    string Town;
+    string Date?;
+    string Slot_1?;
+    string Slot_2?;
+    string Slot_3?;
+    string Slot_4?;
+    string Slot_5?;
+    string Slot_6?;
+    string Slot_7?;
+    string Slot_8?;
+    string Slot_9?;
+    string Slot_10?;
 };
 
 function insertIntoTownDeliveryTableSlot1(StandardDeliveryRequestData request, string packageId) returns string|error {
@@ -176,6 +188,137 @@ function insertIntoTownDeliveryTableSlot1(StandardDeliveryRequestData request, s
     return "Delivery set for: " + request.pickupDate.toString();
 }
 
+// Function to check the first available slot
+function checkAvailable(TownDeliveryTable deliveryTable, string packageId) returns string {
+    if (deliveryTable.Slot_1.toString() == "Available") {
+        return "Slot_1";
+    } else if (deliveryTable.Slot_2.toString() == "Available") {
+        return "Slot_2";
+    } else if (deliveryTable.Slot_3.toString() == "Available") {
+        return "Slot_3";
+    } else if (deliveryTable.Slot_4.toString() == "Available") {
+        return "Slot_4";
+    } else if (deliveryTable.Slot_5.toString() == "Available") {
+        return "Slot_5";
+    } else if (deliveryTable.Slot_6.toString() == "Available") {
+        return "Slot_6";
+    } else if (deliveryTable.Slot_7.toString() == "Available") {
+        return "Slot_7";
+    } else if (deliveryTable.Slot_8.toString() == "Available") {
+        return "Slot_8";
+    } else if (deliveryTable.Slot_9.toString() == "Available") {
+        return "Slot_9";
+    } else if (deliveryTable.Slot_10.toString() == "Available") {
+        return "Slot_10";
+    }
+    return ""; // If no slot is available, return an empty string
+}
+
+// Main function to handle insertion/update of delivery table
+function post_slot1(string packageId, string toTown, string deliveryDate) returns string|error {
+    mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
+    sql:ParameterizedQuery updateQuery = `UPDATE Town_Delivery_table 
+                                          SET Slot_1 = ${packageId} 
+                                          WHERE Town = ${toTown} AND Date = ${deliveryDate};`;
+    log:printInfo("Executing UPDATE query for Slot_1");
+    sql:ExecutionResult|sql:Error updateResult = mysqlClient->execute(updateQuery);
+
+    if (updateResult is sql:Error) {
+        log:printError("Error executing update query for Slot_1", updateResult);
+        return updateResult;
+    }
+
+    check mysqlClient.close();
+    return "Slot_1 updated successfully.";
+}
+
+function post_slot2(string packageId, string toTown, string deliveryDate) returns string|error {
+    mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
+    sql:ParameterizedQuery updateQuery = `UPDATE Town_Delivery_table 
+                                          SET Slot_2 = ${packageId} 
+                                          WHERE Town = ${toTown} AND Date = ${deliveryDate};`;
+    log:printInfo("Executing UPDATE query for Slot_2");
+    sql:ExecutionResult|sql:Error updateResult = mysqlClient->execute(updateQuery);
+
+    if (updateResult is sql:Error) {
+        log:printError("Error executing update query for Slot_2", updateResult);
+        return updateResult;
+    }
+
+    check mysqlClient.close();
+    return "Slot_2 updated successfully.";
+}
+
+function post_slot3(string packageId, string toTown, string deliveryDate) returns string|error {
+    mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
+    sql:ParameterizedQuery updateQuery = `UPDATE Town_Delivery_table 
+                                          SET Slot_3 = ${packageId} 
+                                          WHERE Town = ${toTown} AND Date = ${deliveryDate};`;
+    log:printInfo("Executing UPDATE query for Slot_3");
+    sql:ExecutionResult|sql:Error updateResult = mysqlClient->execute(updateQuery);
+
+    if (updateResult is sql:Error) {
+        log:printError("Error executing update query for Slot_3", updateResult);
+        return updateResult;
+    }
+
+    check mysqlClient.close();
+    return "Slot_3 updated successfully.";
+}
+
+function insertIntoTownDeliveryTable(StandardDeliveryRequestData request, string packageId, string deliveryDate) returns string|error {
+    mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
+
+    log:printInfo("Connecting to the database...");
+
+    // Check if the row for the town and date already exists
+    sql:ParameterizedQuery selectQuery = `SELECT * FROM Town_Delivery_table 
+                                           WHERE Town = ${request.toTown} AND Date = ${deliveryDate};`;
+
+    stream<TownDeliveryTable, sql:Error?> resultStream = mysqlClient->query(selectQuery);
+    boolean rowExists = false;
+
+    sql:Error? forEach = resultStream.forEach(function(TownDeliveryTable deliveryTable) {
+        rowExists = true;
+
+        // Get the first available slot
+        string availableSlot = checkAvailable(deliveryTable, packageId);
+
+        log:printInfo("Found available slot: " + availableSlot);
+
+        string|error postResult;
+
+        if (availableSlot == "Slot_1") {
+            postResult = post_slot1(packageId, request.toTown, deliveryDate);
+        } else if (availableSlot == "Slot_2") {
+            postResult = post_slot2(packageId, request.toTown, deliveryDate);
+        } else if (availableSlot == "Slot_3") {
+            postResult = post_slot3(packageId, request.toTown, deliveryDate);
+        } else {
+            // Handle case when no slots are available
+        }
+
+    });
+
+    if (!rowExists) {
+        log:printInfo("Row does not exist. Inserting new row for Slot 1.");
+        sql:ParameterizedQuery insertQuery = `INSERT INTO Town_Delivery_table 
+                                          (Town, Date, Slot_1, Slot_2, Slot_3, Slot_4, Slot_5, Slot_6, Slot_7, Slot_8, Slot_9, Slot_10) 
+                                          VALUES (${request.toTown}, ${deliveryDate}, ${packageId}, 
+                                                  "Available", "Available", "Available", "Available", "Available", 
+                                                  "Available", "Available", "Available", "Available");`;
+
+        sql:ExecutionResult|sql:Error insertResult = mysqlClient->execute(insertQuery);
+        if (insertResult is sql:Error) {
+            log:printError("Error inserting new row", insertResult);
+            return insertResult;
+        }
+    }
+
+    check mysqlClient.close();
+    return "Delivery set successfully.";
+}
+
 function insertIntoRequestTable(StandardDeliveryRequestData request) returns string|error {
     log:printInfo("Connecting to the database to (insertIntoRequestTable)");
 
@@ -206,7 +349,7 @@ function insertIntoRequestTable(StandardDeliveryRequestData request) returns str
     log:printInfo("insertIntoRequestTable package : " + packageId.toString());
 
     // insert Into Town_Delivery_Table
-    string|error insertIntoTownDeliveryTableResult = insertIntoTownDeliveryTableSlot1(request, packageId);
+    string|error insertIntoTownDeliveryTableResult = insertIntoTownDeliveryTable(request, packageId, deliveryDate);
 
     return "insertIntoRequestTable package : " + packageId.toString();
 
