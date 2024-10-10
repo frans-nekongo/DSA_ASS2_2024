@@ -46,6 +46,27 @@ public type PackageId record {
     string id; // The package ID
 };
 
+public type request_table record {
+    // Unique ID for the delivery request
+    string request_id; // Assuming there's a unique identifier for each request
+    // Name of the customer
+    string customer_name; // Customer's name
+    // Contact information of the customer
+    string customer_contact; // Customer's contact information
+    // Town where the package will be picked up
+    string from_town; // Pickup town
+    // Town where the package will be delivered
+    string to_town; // Delivery town
+    // Date for the package pickup
+    string pickup_date; // Date for pickup
+    // The time slot for the pickup
+    string pickup_slot; // Slot for pickup
+    // Type of delivery requested
+    string delivery_type; // Delivery type (Normal, Express, International)
+    // Estimated date for the delivery
+    string delivery_date; // Estimated delivery date
+};
+
 service / on ep0 {
     // kafka initialisation stuff random here..oh well
     private final kafka:Producer StandardDeliveryRequest;
@@ -172,8 +193,72 @@ service / on ep0 {
     // # Retrieve package status by package ID.
     // #
     // # + return - Package information retrieved successfully. 
-    // resource function get packageStatus(string packageId) returns inline_response_200_1 {
-    // }
+    resource function get packageStatus(string packageId) returns inline_response_200_1|error {
+        // Create a MySQL client to connect to the database
+        mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
+
+        log:printInfo("Connecting to the database...");
+
+        // Prepare the SQL query to fetch the details of the package based on the Package_ID
+        sql:ParameterizedQuery selectQuery = `SELECT * FROM request_table 
+                                           WHERE Package_ID = ${packageId};`;
+
+        // Execute the query and get the result stream
+        stream<request_table, sql:Error?> resultStream = mysqlClient->query(selectQuery);
+        boolean rowExists = false;
+
+        // Declare a variable to hold the response data
+        inline_response_200_1 response = {}; // Initialize response to an empty record
+
+        // Variable to track if there's an error
+        boolean errorOccurred = false;
+        string errorMessage = "";
+
+        // Process the results from the database
+        sql:Error? forEach = resultStream.forEach(function(request_table request) {
+            rowExists = true;
+
+            // Ensure deliveryType is a valid type
+            string deliveryTypeValue = request.delivery_type;
+            if (deliveryTypeValue == "Normal" || deliveryTypeValue == "Express" || deliveryTypeValue == "International") {
+                // Populate the response record with details from the request
+                response = {
+                    requestId: request.request_id, // Assuming you have a field `request_id` in your table
+                    customerName: request.customer_name,
+                    customerContact: request.customer_contact,
+                    fromTown: request.from_town,
+                    toTown: request.to_town,
+                    pickupDate: request.pickup_date,
+                    pickupSlot: request.pickup_slot,
+                    deliveryType: <"Normal"|"Express"|"International">deliveryTypeValue, // Type assertion
+                    deliveryDate: request.delivery_date // Assuming you have a field `delivery_date`
+                };
+
+                log:printInfo("Found package details: " + response.toString());
+            } else {
+                log:printError("Invalid delivery type found in database: " + deliveryTypeValue);
+                errorOccurred = true; // Mark that an error occurred
+                errorMessage = "Invalid delivery type found for Package ID: " + packageId; // Store error message
+            }
+        });
+
+        // Check if no rows were found
+        if (!rowExists) {
+            log:printInfo("No package found with ID: " + packageId);
+            return error("No package found with the provided Package ID.");
+        }
+
+        // Check if an error occurred during processing
+        if (errorOccurred) {
+            return error(errorMessage); // Return the accumulated error message
+        }
+
+        // Close the database connection
+        check mysqlClient.close();
+
+        // Return the response
+        return response; // Now guaranteed to be initialized
+    }
 
     // # Submit a delivery request.
     // #

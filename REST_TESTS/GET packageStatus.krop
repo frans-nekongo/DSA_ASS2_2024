@@ -3,12 +3,14 @@
     "path": "/packageStatus",
     "method": "GET",
     "importedOperationId": "GET /packageStatus",
+    "headers": [],
     "queryParams": [
       {
         "key": "packageId",
-        "value": "PackageID-001"
+        "value": "PackageID-1edb1d6b"
       }
-    ]
+    ],
+    "pathParams": []
   },
   "requests": [
     {
