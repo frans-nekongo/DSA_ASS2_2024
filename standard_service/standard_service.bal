@@ -96,7 +96,7 @@ function createPackageID() returns string {
     string fullUuid = uuid:createType1AsString();
 
     // Extract the first 4 characters of the UUID
-    string packageId = "PackageID-" + fullUuid.substring(0, 4);
+    string packageId = "PackageID-" + fullUuid.substring(0, 8);
 
     // Print the package ID
     log:printInfo("Generated Package ID: " + packageId);
@@ -266,6 +266,25 @@ function post_slot3(string packageId, string toTown, string deliveryDate) return
     return "Slot_3 updated successfully.";
 }
 
+////////
+function post_slot4(string packageId, string toTown, string deliveryDate) returns string|error {
+    mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
+    sql:ParameterizedQuery updateQuery = `UPDATE Town_Delivery_table 
+                                          SET Slot_4 = ${packageId} 
+                                          WHERE Town = ${toTown} AND Date = ${deliveryDate};`;
+    log:printInfo("Executing UPDATE query for Slot_4");
+    sql:ExecutionResult|sql:Error updateResult = mysqlClient->execute(updateQuery);
+
+    if (updateResult is sql:Error) {
+        log:printError("Error executing update query for Slot_4", updateResult);
+        return updateResult;
+    }
+
+    check mysqlClient.close();
+    return "Slot_4 updated successfully.";
+}
+
+
 function insertIntoTownDeliveryTable(StandardDeliveryRequestData request, string packageId, string deliveryDate) returns string|error {
     mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
 
@@ -352,5 +371,4 @@ function insertIntoRequestTable(StandardDeliveryRequestData request) returns str
     string|error insertIntoTownDeliveryTableResult = insertIntoTownDeliveryTable(request, packageId, deliveryDate);
 
     return "insertIntoRequestTable package : " + packageId.toString();
-
 }
