@@ -3,7 +3,7 @@
   "customerContact": "johndoe@example.com",
   "fromTown": "Windhoek",
   "toTown": "Swakopmund",
-  "pickupDate": "2024-10-01",
-  "pickupSlot": "2",
+  "pickupDate": "2024-10-02",
+  "pickupSlot": "6",
   "deliveryType": "Normal"
 }
