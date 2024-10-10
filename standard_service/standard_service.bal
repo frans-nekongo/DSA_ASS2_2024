@@ -88,6 +88,9 @@ function createPackageID() returns string {
     return packageId;
 }
 
+function insertIntoTownDeliveryTable(StandardDeliveryRequestData request, string packageId ) {
+    
+}
 
 function insertIntoRequestTable(StandardDeliveryRequestData request) returns string|error {
     log:printInfo("insertRequestToDB: Connecting to the database to insert request.");
