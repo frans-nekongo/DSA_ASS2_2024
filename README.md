@@ -161,6 +161,7 @@ VALUES
 ('Keetmanshoop', '2024-10-01', 'Available', 'Available', 'Available', 'Available', 'Available', 'Available', 'Available', 'Available', 'Available', 'Available');
 
 ```
+make two tables the  Town_Delivery_table, and  Town_Pickup_table just change name in command
 
 ```sql
 CREATE TABLE
