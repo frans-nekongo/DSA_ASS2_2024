@@ -37,6 +37,9 @@ type TownDeliveryRecord record {
 string dbUser = "RXD";
 string dbPassword = "100101";
 
+// Kafka Producer
+kafka:Producer StandardDeliveryReplyProducer = check new (kafka:DEFAULT_URL);
+
 public function main() returns error? {
 
     // []]]]]]]]]][][]] consumer section ][ ][][] [] [ ] ]] 
@@ -486,6 +489,14 @@ function insertIntoRequestTable(StandardDeliveryRequestData request) returns str
 
     // insert Into Town_Delivery_Table
     string|error insertIntoTownDeliveryTableResult = insertIntoTownDeliveryTable(request, packageId, deliveryDate);
+
+    // Send the complete response message to the Kafka testrep topic
+    check StandardDeliveryReplyProducer->send({
+        topic: "StandardDeliveryReply",
+        value: packageId.toString()
+    });
+
+    log:printInfo("Successfully sent package id to StandardDeliveryReply topic.");
 
     return "insertIntoRequestTable package : " + packageId.toString();
 }

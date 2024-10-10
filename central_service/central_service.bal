@@ -4,7 +4,7 @@
 import ballerina/http;
 import ballerina/log;
 import ballerina/sql;
-import ballerina/uuid;
+// import ballerina/uuid;
 import ballerinax/kafka;
 import ballerinax/mysql;
 import ballerinax/mysql.driver as _;
@@ -40,6 +40,10 @@ type TownDeliveryTable record {
     string Slot_8?;
     string Slot_9?;
     string Slot_10?;
+};
+
+public type PackageId record {
+    string id; // The package ID
 };
 
 service / on ep0 {
@@ -182,9 +186,9 @@ service / on ep0 {
         string deliveryType = payload.deliveryType is string ? <string>payload.deliveryType : "";
         log:printInfo("Delivery Type: " + deliveryType);
 
-        // Simulate generating a package ID
-        string packageId = "PackageID-" + uuid:createType1AsString();
-        log:printInfo("Generated Package ID: " + packageId);
+        // // Simulate generating a package ID
+        // string packageId = "PackageID-" + uuid:createType1AsString();
+        // log:printInfo("Generated Package ID: " + packageId);
 
         // Create a delivery request record
         record {
@@ -205,7 +209,7 @@ service / on ep0 {
             pickupDate: payload.pickupDate is string ? payload.pickupDate : "",
             pickupSlot: payload.pickupSlot is string ? payload.pickupSlot : "",
             deliveryType: deliveryType,
-            packageId: packageId
+            packageId: ""
         };
 
         // Send the delivery request to the appropriate Kafka topic
@@ -226,10 +230,38 @@ service / on ep0 {
             });
         }
 
-        // Return the generated package ID as the response
-        return {
-            packageId: packageId
-        };
+        // Consumer for getting the generated package ID from StandardDeliveryReply
+        kafka:Consumer StandardDeliveryReply = check new (kafka:DEFAULT_URL, {
+            groupId: "StandardDeliveryReplyGroup", // Define the group for the consumer
+            topics: "StandardDeliveryReply" // Subscribe to the StandardDeliveryReply topic
+        });
+
+        // Poll for incoming messages (raw strings)
+        string[] incomingMessages = check StandardDeliveryReply->pollPayload(15);
+
+        // Log the number of messages received
+        log:printInfo("Number of messages received: " + incomingMessages.length().toString());
+
+        // Check if any messages were received
+        if (incomingMessages.length() > 0) {
+            // Log the first message received
+            log:printInfo("Received message: " + incomingMessages[0]);
+
+            // Extract package ID from the first message
+            string packageId = incomingMessages[0]; // Assuming the message format is simply the package ID
+
+            // Return the package ID as the response
+            return {
+                packageId: packageId // Return the package ID
+            };
+        } else {
+            log:printInfo("No message received.");
+
+            return {
+                packageId: "No package ID received"
+            };
+        }
+
     }
 
 }
