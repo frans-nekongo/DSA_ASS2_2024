@@ -300,6 +300,7 @@ function post_slot5(string packageId, string toTown, string deliveryDate) return
     check mysqlClient.close();
     return "Slot_5 updated successfully.";
 }
+
 function post_slot6(string packageId, string toTown, string deliveryDate) returns string|error {
     mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
     sql:ParameterizedQuery updateQuery = `UPDATE Town_Delivery_table 
@@ -316,6 +317,7 @@ function post_slot6(string packageId, string toTown, string deliveryDate) return
     check mysqlClient.close();
     return "Slot_6 updated successfully.";
 }
+
 function post_slot7(string packageId, string toTown, string deliveryDate) returns string|error {
     mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
     sql:ParameterizedQuery updateQuery = `UPDATE Town_Delivery_table 
@@ -332,6 +334,7 @@ function post_slot7(string packageId, string toTown, string deliveryDate) return
     check mysqlClient.close();
     return "Slot_7 updated successfully.";
 }
+
 function post_slot8(string packageId, string toTown, string deliveryDate) returns string|error {
     mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
     sql:ParameterizedQuery updateQuery = `UPDATE Town_Delivery_table 
@@ -348,6 +351,7 @@ function post_slot8(string packageId, string toTown, string deliveryDate) return
     check mysqlClient.close();
     return "Slot_8 updated successfully.";
 }
+
 function post_slot9(string packageId, string toTown, string deliveryDate) returns string|error {
     mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
     sql:ParameterizedQuery updateQuery = `UPDATE Town_Delivery_table 
@@ -364,6 +368,7 @@ function post_slot9(string packageId, string toTown, string deliveryDate) return
     check mysqlClient.close();
     return "Slot_9 updated successfully.";
 }
+
 function post_slot10(string packageId, string toTown, string deliveryDate) returns string|error {
     mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
     sql:ParameterizedQuery updateQuery = `UPDATE Town_Delivery_table 
@@ -380,7 +385,6 @@ function post_slot10(string packageId, string toTown, string deliveryDate) retur
     check mysqlClient.close();
     return "Slot_10 updated successfully.";
 }
-
 
 function insertIntoTownDeliveryTable(StandardDeliveryRequestData request, string packageId, string deliveryDate) returns string|error {
     mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
@@ -410,8 +414,24 @@ function insertIntoTownDeliveryTable(StandardDeliveryRequestData request, string
             postResult = post_slot2(packageId, request.toTown, deliveryDate);
         } else if (availableSlot == "Slot_3") {
             postResult = post_slot3(packageId, request.toTown, deliveryDate);
+        } else if (availableSlot == "Slot_4") {
+            postResult = post_slot4(packageId, request.toTown, deliveryDate);
+        } else if (availableSlot == "Slot_5") {
+            postResult = post_slot5(packageId, request.toTown, deliveryDate);
+        } else if (availableSlot == "Slot_6") {
+            postResult = post_slot6(packageId, request.toTown, deliveryDate);
+        } else if (availableSlot == "Slot_7") {
+            postResult = post_slot7(packageId, request.toTown, deliveryDate);
+        } else if (availableSlot == "Slot_8") {
+            postResult = post_slot8(packageId, request.toTown, deliveryDate);
+        } else if (availableSlot == "Slot_9") {
+            postResult = post_slot9(packageId, request.toTown, deliveryDate);
+        } else if (availableSlot == "Slot_10") {
+            postResult = post_slot10(packageId, request.toTown, deliveryDate);
         } else {
             // Handle case when no slots are available
+            log:printError("No available slots for the given date and town.");
+            postResult = error("No available slots.");
         }
 
     });
@@ -469,3 +489,4 @@ function insertIntoRequestTable(StandardDeliveryRequestData request) returns str
 
     return "insertIntoRequestTable package : " + packageId.toString();
 }
+
