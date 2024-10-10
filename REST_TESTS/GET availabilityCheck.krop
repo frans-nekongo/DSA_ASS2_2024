@@ -6,7 +6,7 @@
     "queryParams": [
       {
         "key": "date",
-        "value": ""
+        "value": "2024-10-04"
       },
       {
         "key": "town",
@@ -16,7 +16,8 @@
         "key": "slot",
         "value": "1"
       }
-    ]
+    ],
+    "pathParams": []
   },
   "requests": [
     {

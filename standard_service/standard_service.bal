@@ -93,7 +93,7 @@ function deliveryDateCalculator(string pickupDate) returns string|error {
 
 function createPackageID() returns string {
     // Generate a UUID and convert it to a string
-    string fullUuid = uuid:createType1AsString();
+    string fullUuid = uuid:createType4AsString();
 
     // Extract the first 4 characters of the UUID
     string packageId = "PackageID-" + fullUuid.substring(0, 8);
@@ -120,73 +120,73 @@ type TownDeliveryTable record {
     string Slot_10?;
 };
 
-function insertIntoTownDeliveryTableSlot1(StandardDeliveryRequestData request, string packageId) returns string|error {
-    // Initialize the MySQL client
-    mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
+// function insertIntoTownDeliveryTableSlot1(StandardDeliveryRequestData request, string packageId) returns string|error {
+//     // Initialize the MySQL client
+//     mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
 
-    log:printInfo("Connecting to the database to (insertIntoTownDeliveryTableSlot1)");
+//     log:printInfo("Connecting to the database to (insertIntoTownDeliveryTableSlot1)");
 
-    // Check if the row for the town and date already exists
-    sql:ParameterizedQuery selectQuery = `SELECT * FROM Town_Delivery_table 
-                                           WHERE Town = ${request.fromTown} AND Date = ${request.pickupDate};`;
-    log:printInfo("Executing SELECT query: ");
+//     // Check if the row for the town and date already exists
+//     sql:ParameterizedQuery selectQuery = `SELECT * FROM Town_Delivery_table 
+//                                            WHERE Town = ${request.fromTown} AND Date = ${request.pickupDate};`;
+//     log:printInfo("Executing SELECT query: ");
 
-    // Execute the query and get the result stream
-    stream<TownDeliveryTable, sql:Error?> resultStream = mysqlClient->query(selectQuery);
-    log:printInfo("Executed SELECT query for town and date.");
+//     // Execute the query and get the result stream
+//     stream<TownDeliveryTable, sql:Error?> resultStream = mysqlClient->query(selectQuery);
+//     log:printInfo("Executed SELECT query for town and date.");
 
-    boolean rowExists = false;
+//     boolean rowExists = false;
 
-    // Process the result stream
-    sql:Error? forEach = resultStream.forEach(function(TownDeliveryTable deliveryTable) {
-        rowExists = true;
-        log:printInfo("Row exists, updating Slot 1...");
+//     // Process the result stream
+//     sql:Error? forEach = resultStream.forEach(function(TownDeliveryTable deliveryTable) {
+//         rowExists = true;
+//         log:printInfo("Row exists, updating Slot 1...");
 
-        // Update Slot 1
-        sql:ParameterizedQuery updateQuery = `UPDATE Town_Delivery_table 
-                                              SET Slot_1 = ${packageId} 
-                                              WHERE Town = ${request.fromTown} AND Date = ${request.pickupDate};`;
-        log:printInfo("Executing UPDATE query for Slot 1: ");
-        sql:ExecutionResult|sql:Error updateResult = mysqlClient->execute(updateQuery);
+//         // Update Slot 1
+//         sql:ParameterizedQuery updateQuery = `UPDATE Town_Delivery_table 
+//                                               SET Slot_1 = ${packageId} 
+//                                               WHERE Town = ${request.fromTown} AND Date = ${request.pickupDate};`;
+//         log:printInfo("Executing UPDATE query for Slot 1: ");
+//         sql:ExecutionResult|sql:Error updateResult = mysqlClient->execute(updateQuery);
 
-        log:printInfo("Updated Slot 1 successfully.");
-    });
+//         log:printInfo("Updated Slot 1 successfully.");
+//     });
 
-    if (forEach is sql:Error) {
-        log:printError("Error processing result stream", forEach);
-    } else {
-        log:printInfo("Completed processing result stream.");
-    }
+//     if (forEach is sql:Error) {
+//         log:printError("Error processing result stream", forEach);
+//     } else {
+//         log:printInfo("Completed processing result stream.");
+//     }
 
-    check resultStream.close();
-    log:printInfo("Closed result stream.");
+//     check resultStream.close();
+//     log:printInfo("Closed result stream.");
 
-    // If the row does not exist, insert a new row for Slot 1
-    if (!rowExists) {
-        log:printInfo("Row does not exist. Inserting new row for Slot 1.");
-        sql:ParameterizedQuery insertQuery = `INSERT INTO Town_Delivery_table 
-                                          (Town, Date, Slot_1, Slot_2, Slot_3, Slot_4, Slot_5, Slot_6, Slot_7, Slot_8, Slot_9, Slot_10) 
-                                          VALUES (${request.fromTown}, ${request.pickupDate}, ${packageId}, 
-                                                  "Available", "Available", "Available", "Available", "Available", 
-                                                  "Available", "Available", "Available", "Available");`;
+//     // If the row does not exist, insert a new row for Slot 1
+//     if (!rowExists) {
+//         log:printInfo("Row does not exist. Inserting new row for Slot 1.");
+//         sql:ParameterizedQuery insertQuery = `INSERT INTO Town_Delivery_table 
+//                                           (Town, Date, Slot_1, Slot_2, Slot_3, Slot_4, Slot_5, Slot_6, Slot_7, Slot_8, Slot_9, Slot_10) 
+//                                           VALUES (${request.fromTown}, ${request.pickupDate}, ${packageId}, 
+//                                                   "Available", "Available", "Available", "Available", "Available", 
+//                                                   "Available", "Available", "Available", "Available");`;
 
-        log:printInfo("Executing INSERT query: ");
-        sql:ExecutionResult|sql:Error insertResult = mysqlClient->execute(insertQuery);
+//         log:printInfo("Executing INSERT query: ");
+//         sql:ExecutionResult|sql:Error insertResult = mysqlClient->execute(insertQuery);
 
-        if (insertResult is sql:Error) {
-            log:printError("Error executing insert query: ", insertResult);
-            return insertResult; // Handle the error accordingly
-        }
-        log:printInfo("Inserted new row successfully for Slot 1.");
-    }
+//         if (insertResult is sql:Error) {
+//             log:printError("Error executing insert query: ", insertResult);
+//             return insertResult; // Handle the error accordingly
+//         }
+//         log:printInfo("Inserted new row successfully for Slot 1.");
+//     }
 
-    // Close the database connection
-    check mysqlClient.close();
-    log:printInfo("Closed MySQL connection.");
+//     // Close the database connection
+//     check mysqlClient.close();
+//     log:printInfo("Closed MySQL connection.");
 
-    log:printInfo("Delivery set for: " + request.pickupDate.toString());
-    return "Delivery set for: " + request.pickupDate.toString();
-}
+//     log:printInfo("Delivery set for: " + request.pickupDate.toString());
+//     return "Delivery set for: " + request.pickupDate.toString();
+// }
 
 // Function to check the first available slot
 function checkAvailable(TownDeliveryTable deliveryTable, string packageId) returns string {
@@ -489,4 +489,6 @@ function insertIntoRequestTable(StandardDeliveryRequestData request) returns str
 
     return "insertIntoRequestTable package : " + packageId.toString();
 }
+
+//pick up stuff
 

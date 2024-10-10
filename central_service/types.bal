@@ -44,13 +44,4 @@ public type inline_response_200_1 record {
     string deliveryDate?;
 };
 
-public type inline_response_200 record {
-    # Indicates if the specified slot is available.
-    boolean available?;
-    # The name of the town.
-    string townName?;
-    # The date for which availability is checked.
-    string date?;
-    # The time slot being checked for availability.
-    string slot?;
-};
+

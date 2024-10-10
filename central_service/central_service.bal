@@ -3,10 +3,44 @@
 
 import ballerina/http;
 import ballerina/log;
+import ballerina/sql;
 import ballerina/uuid;
 import ballerinax/kafka;
+import ballerinax/mysql;
+import ballerinax/mysql.driver as _;
 
 listener http:Listener ep0 = new (9090, config = {host: "localhost"});
+
+// Database configuration
+string dbUser = "RXD";
+string dbPassword = "100101";
+
+public type inline_response_200 record {
+    # Indicates if the specified slot is available.
+    boolean available?;
+    # The name of the town.
+    string townName?;
+    # The date for which availability is checked.
+    string date?;
+    # The time slot being checked for availability.
+    string slot?;
+};
+
+type TownDeliveryTable record {
+    int id;
+    string Town;
+    string Date?;
+    string Slot_1?;
+    string Slot_2?;
+    string Slot_3?;
+    string Slot_4?;
+    string Slot_5?;
+    string Slot_6?;
+    string Slot_7?;
+    string Slot_8?;
+    string Slot_9?;
+    string Slot_10?;
+};
 
 service / on ep0 {
     // kafka initialisation stuff random here..oh well
@@ -54,8 +88,82 @@ service / on ep0 {
     // # Retrieve the available slots for a specific town and date.
     // #
     // # + return - Availability information for the specified town, date, and slot. 
-    // resource function get availabilityCheck(string date, string town, string slot) returns inline_response_200 {
-    // }
+    resource function get availabilityCheck(string date, string town, int slot) returns inline_response_200|error {
+        mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
+
+        log:printInfo("Connecting to the database...");
+
+        // Check if the row for the town and date already exists
+        sql:ParameterizedQuery selectQuery = `SELECT * FROM Town_Pickup_table 
+                                           WHERE Town = ${town} AND Date = ${date};`;
+
+        stream<TownDeliveryTable, sql:Error?> resultStream = mysqlClient->query(selectQuery);
+        boolean rowExists = false;
+        string[] availableSlots = [];
+
+        sql:Error? forEach = resultStream.forEach(function(TownDeliveryTable deliveryTable) {
+            rowExists = true;
+
+            // Get all available slots
+            availableSlots = checkAvailable(deliveryTable);
+
+            log:printInfo("Found available slots: " + availableSlots.toString());
+        });
+
+        if (!rowExists) {
+            log:printInfo("Row does not exist. Inserting new row with all slots available.");
+            sql:ParameterizedQuery insertQuery = `INSERT INTO Town_Pickup_table 
+                                          (Town, Date, Slot_1, Slot_2, Slot_3, Slot_4, Slot_5, Slot_6, Slot_7, Slot_8, Slot_9, Slot_10) 
+                                          VALUES (${town}, ${date}, "Available", 
+                                                  "Available", "Available", "Available", "Available", "Available", 
+                                                  "Available", "Available", "Available", "Available");`;
+
+            sql:ExecutionResult|sql:Error insertResult = mysqlClient->execute(insertQuery);
+
+            if (insertResult is sql:Error) {
+                log:printError("Error inserting new row", insertResult);
+                return insertResult;
+            }
+
+            // If the row was inserted, consider all slots available
+            availableSlots = ["Slot_1", "Slot_2", "Slot_3", "Slot_4", "Slot_5", "Slot_6", "Slot_7", "Slot_8", "Slot_9", "Slot_10"];
+        }
+
+        // Convert the incoming `slot` integer into the format like "Slot_1", "Slot_2", etc.
+        string requestedSlot = "Slot_" + slot.toString();
+
+        // Check if the requested slot is available
+        boolean slotFound = false;
+        // Ensure the loop variable is defined with the correct type
+        foreach string availableSlot in availableSlots {
+            if (availableSlot == requestedSlot) {
+                slotFound = true;
+                break;
+            }
+        }
+
+        // Prepare and return the response based on slot availability
+        inline_response_200 response;
+        if (slotFound) {
+            response = {
+                available: true,
+                townName: town,
+                date: date,
+                slot: requestedSlot
+            };
+        } else {
+            response = {
+                available: false,
+                townName: town,
+                date: date,
+                slot: requestedSlot
+            };
+        }
+
+        // Close the database connection and return the response
+        check mysqlClient.close();
+        return response;
+    }
 
     // # Retrieve package status by package ID.
     // #
@@ -124,4 +232,41 @@ service / on ep0 {
         };
     }
 
+}
+
+function checkAvailable(TownDeliveryTable deliveryTable) returns string[] {
+    string[] availableSlots = [];
+
+    if (deliveryTable.Slot_1.toString() == "Available") {
+        availableSlots.push("Slot_1");
+    }
+    if (deliveryTable.Slot_2.toString() == "Available") {
+        availableSlots.push("Slot_2");
+    }
+    if (deliveryTable.Slot_3.toString() == "Available") {
+        availableSlots.push("Slot_3");
+    }
+    if (deliveryTable.Slot_4.toString() == "Available") {
+        availableSlots.push("Slot_4");
+    }
+    if (deliveryTable.Slot_5.toString() == "Available") {
+        availableSlots.push("Slot_5");
+    }
+    if (deliveryTable.Slot_6.toString() == "Available") {
+        availableSlots.push("Slot_6");
+    }
+    if (deliveryTable.Slot_7.toString() == "Available") {
+        availableSlots.push("Slot_7");
+    }
+    if (deliveryTable.Slot_8.toString() == "Available") {
+        availableSlots.push("Slot_8");
+    }
+    if (deliveryTable.Slot_9.toString() == "Available") {
+        availableSlots.push("Slot_9");
+    }
+    if (deliveryTable.Slot_10.toString() == "Available") {
+        availableSlots.push("Slot_10");
+    }
+
+    return availableSlots; // Returns an array of available slots
 }
