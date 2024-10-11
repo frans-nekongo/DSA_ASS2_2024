@@ -9,7 +9,8 @@ import ballerinax/kafka;
 import ballerinax/mysql;
 import ballerinax/mysql.driver as _;
 
-listener http:Listener ep0 = new (9090, config = {host: "localhost"});
+// listener http:Listener ep0 = new (9090, config = {host: "localhost"});
+listener http:Listener ep0 = new (9090, config = {host: "0.0.0.0"});
 
 // Database configuration
 string dbUser = "RXD";

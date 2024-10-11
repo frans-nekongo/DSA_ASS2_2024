@@ -3,3 +3,10 @@ docker run -d -p 9090:9090 wso2inc/central_service:v0.1.0
 docker run -d wso2inc/standard_service:v0.1.0
 
 docker run -d wso2inc/international_service:v0.1.0
+
+
+docker ps 
+
+docker rmi d08c57b24e28
+
+docker stop
