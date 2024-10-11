@@ -1,0 +1,2 @@
+docker run -d -p 9090:9090 wso2inc/central_service:v0.1.0
+
