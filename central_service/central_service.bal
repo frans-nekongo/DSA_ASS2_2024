@@ -315,7 +315,7 @@ service / on ep0 {
             });
         }
 
-        // Consumer for getting the generated package ID from StandardDeliveryReply
+        // Consumer for getting the generated package ID from _______DeliveryReply,changed from multiple response points to one, since its a response doesnt matter all look the same
         kafka:Consumer StandardDeliveryReply = check new (kafka:DEFAULT_URL, {
             groupId: "StandardDeliveryReplyGroup", // Define the group for the consumer
             topics: "StandardDeliveryReply" // Subscribe to the StandardDeliveryReply topic

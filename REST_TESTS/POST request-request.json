@@ -1,9 +1,9 @@
 {
-  "customerName": "John Doe",
-  "customerContact": "johndoe@example.com",
+  "customerName": "Paper Boi",
+  "customerContact": "PaperPaper@example.com",
   "fromTown": "Windhoek",
-  "toTown": "Swakopmund",
-  "pickupDate": "2024-10-02",
-  "pickupSlot": "6",
-  "deliveryType": "Normal"
+  "toTown": "Oranjemund",
+  "pickupDate": "2024-10-04",
+  "pickupSlot": "2",
+  "deliveryType": "International"
 }
