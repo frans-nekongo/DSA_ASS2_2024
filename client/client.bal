@@ -63,15 +63,23 @@ public function main() returns error? {
 
 // Function to add a new delivery request
 function addDeliveryRequest() returns error|http:Response {
-    string packageId = check io:readln("Enter package ID: ");
+    string customerName = check io:readln("Enter customer name: ");
+    string customerContact = check io:readln("Enter customer contact (e.g., johndoe@example.com): ");
+    string fromTown = check io:readln("Enter pickup town: ");
     string toTown = check io:readln("Enter destination town: ");
-    string deliveryDate = check io:readln("Enter delivery date (YYYY-MM-DD): ");
+    string pickupDate = check io:readln("Enter pickup date (YYYY-MM-DD): ");
+    string pickupSlot = check io:readln("Enter pickup slot (e.g., 6): ");
+    string deliveryType = check io:readln("Enter delivery type (e.g., Normal or Express): ");
     
     // Create the delivery request payload
     map<string> requestPayload = {
-        packageId: packageId,
+        customerName: customerName,
+        customerContact: customerContact,
+        fromTown: fromTown,
         toTown: toTown,
-        deliveryDate: deliveryDate
+        pickupDate: pickupDate,
+        pickupSlot: pickupSlot,
+        deliveryType: deliveryType
     };
 
     // Create and set up the HTTP request
@@ -81,6 +89,7 @@ function addDeliveryRequest() returns error|http:Response {
     
     return deliveryClient->post("/request", request);
 }
+
 
 // Function to retrieve package status by package ID
 function getPackageStatus() returns error|http:Response {
