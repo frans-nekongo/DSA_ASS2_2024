@@ -1,13 +1,14 @@
 import ballerina/http;
 import ballerina/io;
 
+// Import the auto-generated Client class for package delivery requests
 http:Client deliveryClient = check new("http://localhost:9090");
 
 function displayMenuOptions() {
     io:println("Please select an option:");
-    io:println("1. Check availability for a town and date");
-    io:println("2. Submit a delivery request");
-    io:println("3. Check package status by package ID");
+    io:println("1. Add a new delivery request");
+    io:println("2. Retrieve package status by package ID");
+    io:println("3. Check availability for a specific town and date");
     io:println("0. Exit");
 }
 
@@ -20,26 +21,16 @@ public function main() returns error? {
 
         match option {
             "1" => {
-                error|http:Response result = checkAvailability();
+                error|http:Response result = addDeliveryRequest();
                 if result is error {
-                    io:println("Error checking availability");
+                    io:println("Error adding delivery request");
                 } else {
-                    io:println("Available Slots: ");
-                    io:println(result.getJsonPayload());
+                    io:println("Delivery request added successfully");
                 }
             }
 
             "2" => {
-                error|http:Response result = submitDeliveryRequest();
-                if result is error {
-                    io:println("Error submitting delivery request");
-                } else {
-                    io:println("Delivery request submitted successfully");
-                }
-            }
-
-            "3" => {
-                error|http:Response result = checkPackageStatus();
+                error|http:Response result = getPackageStatus();
                 if result is error {
                     io:println("Error retrieving package status");
                 } else {
@@ -48,8 +39,18 @@ public function main() returns error? {
                 }
             }
 
+            "3" => {
+                error|http:Response result = getAvailability();
+                if result is error {
+                    io:println("Error checking availability");
+                } else {
+                    io:println("Availability Check: ");
+                    io:println(result.getJsonPayload());
+                }
+            }
+
             "0" => {
-                io:println("Exiting...");
+                // Exit the CLI
                 break;
             }
 
@@ -60,49 +61,48 @@ public function main() returns error? {
     }
 }
 
-function checkAvailability() returns error|http:Response {
-    string town = check io:readln("Enter town name: ");
-    string date = check io:readln("Enter date (YYYY-MM-DD): ");
-    
-    // Directly create the map with query parameters
-    map<string|string[]> queryParams = {
-        "town": [town],
-        "date": [date]
-    };
-
-    // Use the map as a parameter for the get request
-    return deliveryClient->get("/availabilityCheck", queryParams);
-}
-
-function submitDeliveryRequest() returns error|http:Response {
-    string customerName = check io:readln("Enter customer name: ");
-    string fromTown = check io:readln("Enter pickup town: ");
+// Function to add a new delivery request
+function addDeliveryRequest() returns error|http:Response {
+    string packageId = check io:readln("Enter package ID: ");
     string toTown = check io:readln("Enter destination town: ");
-    string pickupDate = check io:readln("Enter pickup date (YYYY-MM-DD): ");
-    string deliveryType = check io:readln("Enter delivery type (normal/express/international): ");
-
+    string deliveryDate = check io:readln("Enter delivery date (YYYY-MM-DD): ");
+    
+    // Create the delivery request payload
     map<string> requestPayload = {
-        "customerName": customerName,
-        "fromTown": fromTown,
-        "toTown": toTown,
-        "pickupDate": pickupDate,
-        "deliveryType": deliveryType
+        packageId: packageId,
+        toTown: toTown,
+        deliveryDate: deliveryDate
     };
 
+    // Create and set up the HTTP request
     http:Request request = new;
     json jsonBody = requestPayload.toJson();
     request.setPayload(jsonBody, "application/json");
+    
     return deliveryClient->post("/request", request);
 }
 
-function checkPackageStatus() returns error|http:Response {
+// Function to retrieve package status by package ID
+function getPackageStatus() returns error|http:Response {
     string packageId = check io:readln("Enter package ID: ");
     
-    // Directly create the map with query parameters
-    map<string|string[]> queryParams = {
-        "packageId": [packageId]
-    };
+    // Construct the query URL using the packageId as a query parameter
+    string url = "/packageStatus?packageId=" + packageId;
 
-    // Use the map as a parameter for the get request
-    return deliveryClient->get("/packageStatus", queryParams);
+    // Make the GET request using the constructed URL
+    return deliveryClient->get(url);
+}
+
+
+// Function to check availability for a specific town and date
+function getAvailability() returns error|http:Response {
+    string town = check io:readln("Enter town: ");
+    string date = check io:readln("Enter date (YYYY-MM-DD): ");
+    string slot = check io:readln("Enter slot (e.g., Slot_1): "); // Prompt for slot input
+
+    // Construct the query URL
+    string url = "/availabilityCheck?town=" + town + "&date=" + date + "&slot=" + slot; // Include slot in the URL
+
+    // Make the GET request
+    return deliveryClient->get(url);
 }
