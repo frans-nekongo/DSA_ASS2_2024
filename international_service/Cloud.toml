@@ -1,4 +1,4 @@
 [container.image]
 repository="wso2inc"
-name="international_service"
+name="standard_service"
 tag="v0.1.0"

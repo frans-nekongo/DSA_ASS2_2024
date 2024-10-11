@@ -9,6 +9,14 @@ distribution-version = "2201.9.2"
 
 [[package]]
 org = "ballerina"
+name = "cloud"
+version = "3.0.1"
+modules = [
+	{org = "ballerina", packageName = "cloud", moduleName = "cloud"}
+]
+
+[[package]]
+org = "ballerina"
 name = "crypto"
 version = "2.7.2"
 dependencies = [
@@ -177,6 +185,7 @@ org = "rxd"
 name = "international_service"
 version = "0.1.0"
 dependencies = [
+	{org = "ballerina", name = "cloud"},
 	{org = "ballerina", name = "log"},
 	{org = "ballerina", name = "sql"},
 	{org = "ballerina", name = "time"},
