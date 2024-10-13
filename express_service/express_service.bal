@@ -230,7 +230,7 @@ function post_slot5(string packageId, string toTown, string deliveryDate) return
     if (updateResult is sql:Error) {
         log:printError("Error executing update query for Slot_5", updateResult);
         return updateResult;
-    }
+    } 
 
     check mysqlClient.close();
     return "Slot_5 updated successfully.";
