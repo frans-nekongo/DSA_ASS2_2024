@@ -51,13 +51,13 @@ public function main() returns error? {
 
     while true {
         // Poll for new messages from the ExpressDeliveryRequest topic
-        ExpressDeliveryRequestData[] requests = check ExpressDeliveryRequest->pollPayload(15); // Poll with a timeout of 15 seconds
+        StandardDeliveryRequestData[] requests = check ExpressDeliveryRequest->pollPayload(15); // Poll with a timeout of 15 seconds
 
         if (requests.length() > 0) {
             log:printInfo("Received " + requests.length().toString() + "Request from the ExpressDeliveryRequest topic.");
         }
 
-        from ExpressDeliveryRequestData request in requests
+        from StandardDeliveryRequestData request in requests
         do {
             // Log the received request
             log:printInfo("Requested from : " + request.fromTown + ", to : " + request.toTown);
@@ -321,7 +321,7 @@ function post_slot10(string packageId, string toTown, string deliveryDate) retur
     return "Slot_10 updated successfully.";
 }
 
-function insertIntoTownDeliveryTable(ExpressDeliveryRequestData request, string packageId, string deliveryDate) returns string|error {
+function insertIntoTownDeliveryTable(StandardDeliveryRequestData request, string packageId, string deliveryDate) returns string|error {
     mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
 
     log:printInfo("Connecting to the database...");
@@ -390,7 +390,7 @@ function insertIntoTownDeliveryTable(ExpressDeliveryRequestData request, string 
     return "Delivery set successfully.";
 }
 
-function insertIntoRequestTable(ExpressDeliveryRequestData request) returns string|error {
+function insertIntoRequestTable(StandardDeliveryRequestData request) returns string|error {
     log:printInfo("Connecting to the database to (insertIntoRequestTable)");
 
     mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
