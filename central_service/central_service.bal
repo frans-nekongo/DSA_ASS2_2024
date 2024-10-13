@@ -66,9 +66,34 @@ public type request_table record {
     string delivery_type; // Delivery type (Normal, Express, International)
     // Estimated date for the delivery
     string delivery_date; // Estimated delivery date
-};
 
+};
+// Service-level CORS configuration
+@http:ServiceConfig {
+    cors: {
+        allowOrigins: ["*"], // Allow all origins or specify your allowed origins
+        allowCredentials: false,
+        allowHeaders: ["Content-Type", "Authorization"],
+        exposeHeaders: ["X-Custom-Header"],
+        maxAge: 3600
+    }
+}
 service / on ep0 {
+    resource function options memo() returns http:Response {
+        // Create a response object with status code 204 and appropriate CORS headers
+        http:Response response = new;
+
+        response.statusCode = 204; // No Content
+        response.reasonPhrase = "No Content";
+
+        // Add CORS headers using appropriate methods
+        response.addHeader("Access-Control-Allow-Origin", "*"); // or specify allowed origins
+        response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
+        response.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        response.addHeader("Access-Control-Max-Age", "3600");
+
+        return response;
+    }
     // kafka initialisation stuff random here..oh well
     private final kafka:Producer StandardDeliveryRequest;
     private final kafka:Consumer StandardDeliveryReply;

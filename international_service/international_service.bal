@@ -7,7 +7,7 @@ import ballerinax/kafka;
 import ballerinax/mysql;
 import ballerinax/mysql.driver as _;
 
-type StandardDeliveryRequestData record {
+type InternationalDeliveryRequestData record {
     string customerName;
     string customerContact;
     string fromTown;
@@ -51,13 +51,13 @@ public function main() returns error? {
 
     while true {
         // Poll for new messages from the InternationalDeliveryRequest topic
-        StandardDeliveryRequestData[] requests = check InternationalDeliveryRequest->pollPayload(15); // Poll with a timeout of 15 seconds
+        InternationalDeliveryRequestData[] requests = check InternationalDeliveryRequest->pollPayload(15); // Poll with a timeout of 15 seconds
 
         if (requests.length() > 0) {
             log:printInfo("Received " + requests.length().toString() + "Request from the InternationalDeliveryRequest topic.");
         }
 
-        from StandardDeliveryRequestData request in requests
+        from InternationalDeliveryRequestData request in requests
         do {
             // Log the received request
             log:printInfo("Requested from : " + request.fromTown + ", to : " + request.toTown);
@@ -323,7 +323,7 @@ function post_slot10(string packageId, string toTown, string deliveryDate) retur
     return "Slot_10 updated successfully.";
 }
 
-function insertIntoTownDeliveryTable(StandardDeliveryRequestData request, string packageId, string deliveryDate) returns string|error {
+function insertIntoTownDeliveryTable(InternationalDeliveryRequestData request, string packageId, string deliveryDate) returns string|error {
     mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
 
     log:printInfo("Connecting to the database...");
@@ -392,7 +392,7 @@ function insertIntoTownDeliveryTable(StandardDeliveryRequestData request, string
     return "Delivery set successfully.";
 }
 
-function insertIntoRequestTable(StandardDeliveryRequestData request) returns string|error {
+function insertIntoRequestTable(InternationalDeliveryRequestData request) returns string|error {
     log:printInfo("Connecting to the database to (insertIntoRequestTable)");
 
     mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
