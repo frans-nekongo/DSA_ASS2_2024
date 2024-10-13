@@ -81,8 +81,8 @@ function deliveryDateCalculator(string pickupDate) returns string|error {
     // Convert the civil time to UTC
     time:Utc utcPickupDate = check time:utcFromCivil(civilPickupDate);
 
-    // Add 2 days (172800 seconds) to the UTC time
-    time:Utc deliveryUtcDate = time:utcAddSeconds(utcPickupDate, 172800); // 2 days in seconds
+    // Add 1 day (86400 seconds) to the UTC time
+    time:Utc deliveryUtcDate = time:utcAddSeconds(utcPickupDate, 86400); // 1 day in seconds
 
     // Convert the delivery UTC date back to a civil time
     time:Civil deliveryCivilDate = time:utcToCivil(deliveryUtcDate);
