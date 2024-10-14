@@ -7,7 +7,7 @@ import ballerinax/kafka;
 import ballerinax/mysql;
 import ballerinax/mysql.driver as _;
 
-type StandardDeliveryRequestData record {
+type ExpressDeliveryRequestData record {
     string customerName;
     string customerContact;
     string fromTown;
