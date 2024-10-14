@@ -1,4 +1,15 @@
 # DSA_ASS2_2024
+
+## Group Members
+
+- [Frans Nekongo- 221004351]
+- [Abisai Sem - 221084703]
+- [Nokutenda Ray Katananga - 221113657]
+- [Jose Clayton - 221078673]
+- [Marcel Namaseb - 221009736]
+- [Max Haikali- 221128220]
+
+
 Containerized Microservices with Ballerina and Kafka for Course Title: Distributed Systems and Applications   Course Code: DSA612S   Assessment: Second Assignment 
 
 ![alt text](image.png)
