@@ -4,6 +4,10 @@ docker run -d wso2inc/standard_service:v0.1.0
 
 docker run -d wso2inc/international_service:v0.1.0
 
+docker run -d wso2inc/express_service:v0.1.0
+
+
+
 
 docker ps 
 
