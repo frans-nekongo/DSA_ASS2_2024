@@ -377,6 +377,40 @@ service / on ep0 {
 
 }
 
-/ here 98
+function checkAvailable(TownDeliveryTable deliveryTable) returns string[] {
+    string[] availableSlots = [];
+
+    if (deliveryTable.Slot_1.toString() == "Available") {
+        availableSlots.push("Slot_1");
+    }
+    if (deliveryTable.Slot_2.toString() == "Available") {
+        availableSlots.push("Slot_2");
+    }
+    if (deliveryTable.Slot_3.toString() == "Available") {
+        availableSlots.push("Slot_3");
+    }
+    if (deliveryTable.Slot_4.toString() == "Available") {
+        availableSlots.push("Slot_4");
+    }
+    if (deliveryTable.Slot_5.toString() == "Available") {
+        availableSlots.push("Slot_5");
+    }
+    if (deliveryTable.Slot_6.toString() == "Available") {
+        availableSlots.push("Slot_6");
+    }
+    if (deliveryTable.Slot_7.toString() == "Available") {
+        availableSlots.push("Slot_7");
+    }
+    if (deliveryTable.Slot_8.toString() == "Available") {
+        availableSlots.push("Slot_8");
+    }
+    if (deliveryTable.Slot_9.toString() == "Available") {
+        availableSlots.push("Slot_9");
+    }
+    if (deliveryTable.Slot_10.toString() == "Available") {
+        availableSlots.push("Slot_10");
+    }
+
+    return availableSlots; // Returns an array of available slots
 }
 
