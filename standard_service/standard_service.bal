@@ -235,22 +235,7 @@ function post_slot1(string packageId, string toTown, string deliveryDate) return
     return "Slot_1 updated successfully.";
 }
 
-function post_slot2(string packageId, string toTown, string deliveryDate) returns string|error {
-    mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
-    sql:ParameterizedQuery updateQuery = `UPDATE Town_Delivery_table 
-                                          SET Slot_2 = ${packageId} 
-                                          WHERE Town = ${toTown} AND Date = ${deliveryDate};`;
-    log:printInfo("Executing UPDATE query for Slot_2");
-    sql:ExecutionResult|sql:Error updateResult = mysqlClient->execute(updateQuery);
-
-    if (updateResult is sql:Error) {
-        log:printError("Error executing update query for Slot_2", updateResult);
-        return updateResult;
-    }
-
-    check mysqlClient.close();
-    return "Slot_2 updated successfully.";
-}
+// Post function here
 
 function post_slot3(string packageId, string toTown, string deliveryDate) returns string|error {
     mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
