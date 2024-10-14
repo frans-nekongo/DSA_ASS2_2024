@@ -1,5 +1,5 @@
 [package]
-org = "abisai_sem"
+org = "rxd"
 name = "express_service"
 version = "0.1.0"
 distribution = "2201.9.2"
