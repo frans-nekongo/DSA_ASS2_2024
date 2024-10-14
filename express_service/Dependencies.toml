@@ -8,6 +8,33 @@ dependencies-toml-version = "2"
 distribution-version = "2201.9.2"
 
 [[package]]
+org = "abisai_sem"
+name = "express_service"
+version = "0.1.0"
+dependencies = [
+	{org = "ballerina", name = "cloud"},
+	{org = "ballerina", name = "log"},
+	{org = "ballerina", name = "sql"},
+	{org = "ballerina", name = "time"},
+	{org = "ballerina", name = "uuid"},
+	{org = "ballerinai", name = "observe"},
+	{org = "ballerinax", name = "kafka"},
+	{org = "ballerinax", name = "mysql"},
+	{org = "ballerinax", name = "mysql.driver"}
+]
+modules = [
+	{org = "abisai_sem", packageName = "express_service", moduleName = "express_service"}
+]
+
+[[package]]
+org = "ballerina"
+name = "cloud"
+version = "3.0.1"
+modules = [
+	{org = "ballerina", packageName = "cloud", moduleName = "cloud"}
+]
+
+[[package]]
 org = "ballerina"
 name = "crypto"
 version = "2.7.2"
@@ -170,23 +197,5 @@ name = "mysql.driver"
 version = "1.7.0"
 modules = [
 	{org = "ballerinax", packageName = "mysql.driver", moduleName = "mysql.driver"}
-]
-
-[[package]]
-org = "rxd"
-name = "standard_service"
-version = "0.1.0"
-dependencies = [
-	{org = "ballerina", name = "log"},
-	{org = "ballerina", name = "sql"},
-	{org = "ballerina", name = "time"},
-	{org = "ballerina", name = "uuid"},
-	{org = "ballerinai", name = "observe"},
-	{org = "ballerinax", name = "kafka"},
-	{org = "ballerinax", name = "mysql"},
-	{org = "ballerinax", name = "mysql.driver"}
-]
-modules = [
-	{org = "rxd", packageName = "standard_service", moduleName = "standard_service"}
 ]
 

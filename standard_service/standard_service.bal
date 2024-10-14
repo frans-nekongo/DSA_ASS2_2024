@@ -496,7 +496,7 @@ function insertIntoRequestTable(StandardDeliveryRequestData request) returns str
         value: packageId.toString()
     });
 
-    log:printInfo("Successfully sent package id to StandardDeliveryReply topic.");
+    log:printInfo("Successfully sent "+packageId.toBalString()+"to StandardDeliveryReply topic.");
 
     return "insertIntoRequestTable package : " + packageId.toString();
 }

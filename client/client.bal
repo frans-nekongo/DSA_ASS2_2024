@@ -69,7 +69,7 @@ function addDeliveryRequest() returns error|http:Response {
     string toTown = check io:readln("Enter destination town: ");
     string pickupDate = check io:readln("Enter pickup date (YYYY-MM-DD): ");
     string pickupSlot = check io:readln("Enter pickup slot (e.g., 6): ");
-    string deliveryType = check io:readln("Enter delivery type (e.g., Normal or Express): ");
+    string deliveryType = check io:readln("Enter delivery type (e.g., International, Normal , Express): ");
     
     // Create the delivery request payload
     map<string> requestPayload = {
