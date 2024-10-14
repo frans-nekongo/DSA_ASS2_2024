@@ -17,7 +17,22 @@ type StandardDeliveryRequestData record {
     string deliveryType;
 };
 
-// here
+type TownDeliveryRecord record {
+    int id;
+    string Town;
+    string Date;
+    string? Slot_1;
+    string? Slot_2;
+    string? Slot_3;
+    string? Slot_4;
+    string? Slot_5;
+    string? Slot_6;
+    string? Slot_7;
+    string? Slot_8;
+    string? Slot_9;
+    string? Slot_10;
+};
+
 // Database configuration
 string dbUser = "RXD";
 string dbPassword = "100101";
