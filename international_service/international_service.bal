@@ -95,34 +95,7 @@ function deliveryDateCalculator(string pickupDate) returns string|error {
 }
 
 
-function createPackageID() returns string {
-    // Generate a UUID and convert it to a string
-    string fullUuid = uuid:createType4AsString();
-
-    // Extract the first 4 characters of the UUID
-    string packageId = "PackageID-" + fullUuid.substring(0, 8);
-
-    // Print the package ID
-    log:printInfo("Generated Package ID: " + packageId);
-
-    return packageId;
-}
-
-type TownDeliveryTable record {
-    int id;
-    string Town;
-    string Date?;
-    string Slot_1?;
-    string Slot_2?;
-    string Slot_3?;
-    string Slot_4?;
-    string Slot_5?;
-    string Slot_6?;
-    string Slot_7?;
-    string Slot_8?;
-    string Slot_9?;
-    string Slot_10?;
-};
+// here 98
 
 
 // Function to check the first available slot
