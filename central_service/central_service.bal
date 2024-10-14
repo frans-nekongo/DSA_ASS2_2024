@@ -342,4 +342,75 @@ service / on ep0 {
         }
 
         // Consumer for getting the generated package ID from _______DeliveryReply,changed from multiple response points to one, since its a response doesnt matter all look the same
-       
+        kafka:Consumer StandardDeliveryReply = check new (kafka:DEFAULT_URL, {
+            groupId: "StandardDeliveryReplyGroup", // Define the group for the consumer
+            topics: "StandardDeliveryReply" // Subscribe to the StandardDeliveryReply topic
+        });
+
+        // Poll for incoming messages (raw strings)
+        string[] incomingMessages = check StandardDeliveryReply->pollPayload(15);
+
+        // Log the number of messages received
+        log:printInfo("Number of messages received: " + incomingMessages.length().toString());
+
+        // Check if any messages were received
+        if (incomingMessages.length() > 0) {
+            // Log the first message received
+            log:printInfo("Received message: " + incomingMessages[0]);
+
+            // Extract package ID from the first message
+            string packageId = incomingMessages[0]; // Assuming the message format is simply the package ID
+
+            // Return the package ID as the response
+            return {
+                packageId: packageId // Return the package ID
+            };
+        } else {
+            log:printInfo("No message received.");
+
+            return {
+                packageId: "No package ID received"
+            };
+        }
+
+    }
+
+}
+
+function checkAvailable(TownDeliveryTable deliveryTable) returns string[] {
+    string[] availableSlots = [];
+
+    if (deliveryTable.Slot_1.toString() == "Available") {
+        availableSlots.push("Slot_1");
+    }
+    if (deliveryTable.Slot_2.toString() == "Available") {
+        availableSlots.push("Slot_2");
+    }
+    if (deliveryTable.Slot_3.toString() == "Available") {
+        availableSlots.push("Slot_3");
+    }
+    if (deliveryTable.Slot_4.toString() == "Available") {
+        availableSlots.push("Slot_4");
+    }
+    if (deliveryTable.Slot_5.toString() == "Available") {
+        availableSlots.push("Slot_5");
+    }
+    if (deliveryTable.Slot_6.toString() == "Available") {
+        availableSlots.push("Slot_6");
+    }
+    if (deliveryTable.Slot_7.toString() == "Available") {
+        availableSlots.push("Slot_7");
+    }
+    if (deliveryTable.Slot_8.toString() == "Available") {
+        availableSlots.push("Slot_8");
+    }
+    if (deliveryTable.Slot_9.toString() == "Available") {
+        availableSlots.push("Slot_9");
+    }
+    if (deliveryTable.Slot_10.toString() == "Available") {
+        availableSlots.push("Slot_10");
+    }
+
+    return availableSlots; // Returns an array of available slots
+}
+
