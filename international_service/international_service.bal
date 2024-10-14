@@ -392,47 +392,5 @@ function insertIntoTownDeliveryTable(InternationalDeliveryRequestData request, s
     return "Delivery set successfully.";
 }
 
-function insertIntoRequestTable(InternationalDeliveryRequestData request) returns string|error {
-    log:printInfo("Connecting to the database to (insertIntoRequestTable)");
-
-    mysql:Client mysqlClient = check new ("localhost", dbUser, dbPassword, database = "LogisticsDB");
-
-    // Create a delivery date 
-    string deliveryDate = check deliveryDateCalculator(request.pickupDate);
-
-    // Create a packageID
-    string packageId = createPackageID();
-
-    // Create a parameterized query to insert the data into the request table
-    // Create an insert query
-    sql:ParameterizedQuery insertQuery = `INSERT INTO request_table (Customer_Name, Customer_contact, From_Town, To_Town, 
-                                                               Pickup_Date, Pickup_Slot, Delivery_Type, Delivery_Date, Package_ID) 
-                                       VALUES (${request.customerName}, ${request.customerContact}, ${request.fromTown}, ${request.toTown}, 
-                                               ${request.pickupDate}, ${request.pickupSlot}, ${request.deliveryType}, ${deliveryDate}, ${packageId})`;
-
-    // Log the insert query for debugging
-    log:printInfo("insertRequestToDB: Executing insert query.");
-
-    // Execute the insert query
-    sql:ExecutionResult executionResult = check mysqlClient->execute(insertQuery);
-
-    // Close the database connection
-    check mysqlClient.close();
-
-    log:printInfo("insertIntoRequestTable package : " + packageId.toString());
-
-    // insert Into Town_Delivery_Table
-    string|error insertIntoTownDeliveryTableResult = insertIntoTownDeliveryTable(request, packageId, deliveryDate);
-
-    // Send the complete response message to the Kafka testrep topic
-    check InternationalDeliveryReplyProducer->send({
-        topic: "StandardDeliveryReply",
-        value: packageId.toString()
-    });
-
-    log:printInfo("Successfully sent package id to DeliveryReply topic.");
-
-    return "insertIntoRequestTable package : " + packageId.toString();
-}
 
 //pick up stuff
