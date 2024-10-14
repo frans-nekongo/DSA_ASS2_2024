@@ -37,18 +37,7 @@ type TownDeliveryRecord record {
 string dbUser = "RXD";
 string dbPassword = "100101";
 
-// Kafka Producer
-kafka:Producer ExpressDeliveryReplyProducer = check new (kafka:DEFAULT_URL);
-
-public function main() returns error? {
-
-    // []]]]]]]]]][][]] consumer section ][ ][][] [] [ ] ]] 
-    // Create a consumer for the ExpressDeliveryRequest topic
-    kafka:Consumer ExpressDeliveryRequest = check new (kafka:DEFAULT_URL, {
-        groupId: "ExpressDeliveryRequestGroup", // Define the group for the consumer
-        topics: "ExpressDeliveryRequest" // Subscribe to the topic
-    });
-
+//Kafka will be here
     while true {
         // Poll for new messages from the ExpressDeliveryRequest topic
         StandardDeliveryRequestData[] requests = check ExpressDeliveryRequest->pollPayload(15); // Poll with a timeout of 15 seconds
